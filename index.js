@@ -33,7 +33,7 @@ import fetch from "node-fetch";
   const getDeliveryDay = (date) => {
     let deliveryDay = moment(date).add(1, "days");
     // add a day when, sat, sun or holiday
-
+    
     while (
       parseInt(moment(deliveryDay).format("e")) == 6 ||
       parseInt(moment(deliveryDay).format("e")) == 0 ||
@@ -67,10 +67,10 @@ import fetch from "node-fetch";
         checkValidity(date);
       }, 5000);
     } else {
-      console.log(date)
+      // console.log(date);
       const currentTime = moment().tz(config.timezone);
-      const currentTimeH = currentTime.format("H");
-      const currentTimeM = currentTime.format("mm");
+      const currentTimeH = date.format("H");
+      const currentTimeM = date.format("mm");
 
       //// Checks if office hours are open or closed
       // If Time is between open and closing
@@ -85,16 +85,23 @@ import fetch from "node-fetch";
             .add(currentTimeM, "minutes"),
           "minutes"
         );
+        console.log(getDeliveryDay(date))
+        // console.log(date)
         setTimeout(() => {
           runClock();
         }, 10000);
         // If Time is after closing
       } else if (currentTimeH >= config.closeHour) {
         // Add one day delivery if office hours are closed
-        date.add(1, "days");
-        console.log(date)
-        const day = getDeliveryDay(date);
-        console.log(day);
+        // console.log(date);
+        const day = getDeliveryDay(new Date(getDeliveryDay(date)));
+        // console.log(new Date(moment(new Date(day)).add(1, "days")).toLocaleDateString("en-us", {
+        //   weekday: "long",
+        //   year: "numeric",
+        //   month: "short",
+        //   day: "numeric",
+        // }));
+        console.log(day)
         // If time is before opening
       } else if (currentTimeH < config.openHour) {
         const day = getDeliveryDay(date);
@@ -102,7 +109,11 @@ import fetch from "node-fetch";
       }
     }
   };
-  const currentTime = moment().tz(config.timezone);
+  const runClock = () => {
+    const currentTime = moment().tz(config.timezone);
+    const cur = moment(new Date(2022, 11, 30, 16, 0, 0))
 
-  checkValidity(currentTime);
+    checkValidity(cur);
+  };
+  runClock();
 })();
